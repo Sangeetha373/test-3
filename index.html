@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🇮🇳 Indian Location Based Recipe App</title>
+<title>🇮🇳 AI Indian Recipe Suggester</title>
 
 <style>
 body{font-family:Segoe UI;background:#f4f6f8;margin:0;padding:20px;}
-.container{max-width:1100px;margin:auto;}
+.container{max-width:1200px;margin:auto;}
 header{text-align:center;margin-bottom:20px;}
-.search-box{background:white;padding:20px;border-radius:10px;}
 input,select,button{
 padding:10px;border-radius:6px;border:1px solid #ccc;font-size:15px;
 }
@@ -22,6 +21,7 @@ button:hover{background:#219150;}
 .badge{font-size:12px;padding:4px 6px;border-radius:4px;font-weight:bold;}
 .veg{background:#e8f5e9;color:#2ecc71;}
 .nonveg{background:#ffebee;color:#e74c3c;}
+.score{font-size:12px;color:#555;margin:5px 0;}
 .steps{font-size:13px;max-height:120px;overflow-y:auto;}
 .youtube{display:inline-block;margin-top:8px;background:#c4302b;color:white;
 padding:6px 10px;border-radius:5px;text-decoration:none;font-size:13px;}
@@ -33,19 +33,17 @@ padding:6px 10px;border-radius:5px;text-decoration:none;font-size:13px;}
 <div class="container">
 
 <header>
-<h1>🇮🇳 Indian Smart Recipe App</h1>
-<p id="locationText">Detecting location...</p>
+<h1>🇮🇳 AI Indian Recipe Engine</h1>
+<p>Smart Ranking • All Indian Dishes • Intelligent Suggestions</p>
 </header>
 
-<div class="search-box">
-<input type="text" id="ingredient" placeholder="Enter ingredient (potato, chicken...)">
+<input type="text" id="ingredient" placeholder="Enter ingredient (potato, chicken, onion...)">
 <select id="diet">
 <option value="all">All</option>
 <option value="veg">Veg</option>
 <option value="nonveg">Non-Veg</option>
 </select>
 <button onclick="searchRecipe()">Search</button>
-</div>
 
 <div id="results" class="results"></div>
 
@@ -53,116 +51,28 @@ padding:6px 10px;border-radius:5px;text-decoration:none;font-size:13px;}
 
 <script>
 
-// ---------------- INDIAN DATABASE ----------------
+// ---------------- BIG INDIAN DATABASE ----------------
 
 const recipes = [
 
-{
-name:"Chicken Biryani",
-type:"nonveg",
-region:"india",
-ingredients:["chicken","rice","onion","tomato","ginger","garlic","spices"],
-steps:[
-"Marinate chicken with spices.",
-"Fry onions until golden.",
-"Add chicken and cook well.",
-"Add rice and water.",
-"Cook until rice is fluffy."
-],
-image:"https://www.indianhealthyrecipes.com/wp-content/uploads/2021/12/chicken-biryani.jpg"
-},
-
-{
-name:"Veg Biryani",
-type:"veg",
-region:"india",
-ingredients:["rice","potato","carrot","beans","onion","tomato"],
-steps:[
-"Saute onions.",
-"Add vegetables and spices.",
-"Add rice and water.",
-"Cook until done."
-],
-image:"https://www.indianhealthyrecipes.com/wp-content/uploads/2021/12/veg-biryani-recipe.jpg"
-},
-
-{
-name:"Chicken Gravy",
-type:"nonveg",
-region:"india",
-ingredients:["chicken","onion","tomato","garlic","ginger"],
-steps:[
-"Saute onion.",
-"Add ginger garlic paste.",
-"Add tomato.",
-"Add chicken and cook.",
-"Simmer until thick."
-],
-image:"https://www.indianhealthyrecipes.com/wp-content/uploads/2022/03/chicken-gravy.jpg"
-},
-
-{
-name:"Sambar",
-type:"veg",
-region:"tamilnadu",
-ingredients:["dal","onion","tomato","drumstick","tamarind"],
-steps:[
-"Cook dal.",
-"Boil vegetables.",
-"Add tamarind water.",
-"Add sambar powder.",
-"Boil 10 minutes."
-],
-image:"https://www.indianhealthyrecipes.com/wp-content/uploads/2021/06/sambar.jpg"
-},
-
-{
-name:"Dosa",
-type:"veg",
-region:"tamilnadu",
-ingredients:["rice","urad dal"],
-steps:[
-"Prepare dosa batter.",
-"Heat tawa.",
-"Spread batter.",
-"Cook both sides."
-],
-image:"https://www.indianhealthyrecipes.com/wp-content/uploads/2021/07/dosa-recipe.jpg"
-},
-
-{
-name:"Aloo Fry",
-type:"veg",
-region:"india",
-ingredients:["potato","onion","chilli"],
-steps:[
-"Cut potatoes.",
-"Add spices.",
-"Fry until crispy."
-],
-image:"https://www.indianhealthyrecipes.com/wp-content/uploads/2021/05/aloo-fry.jpg"
-}
-
+{name:"Chicken Biryani",type:"nonveg",ingredients:["chicken","rice","onion","tomato","ginger","garlic"]},
+{name:"Veg Biryani",type:"veg",ingredients:["rice","potato","carrot","beans","onion"]},
+{name:"Chicken Gravy",type:"nonveg",ingredients:["chicken","onion","tomato","garlic"]},
+{name:"Butter Chicken",type:"nonveg",ingredients:["chicken","butter","tomato","cream"]},
+{name:"Paneer Butter Masala",type:"veg",ingredients:["paneer","tomato","butter","cream"]},
+{name:"Aloo Fry",type:"veg",ingredients:["potato","onion","chilli"]},
+{name:"Sambar",type:"veg",ingredients:["dal","onion","tomato","tamarind"]},
+{name:"Rasam",type:"veg",ingredients:["tomato","pepper","garlic"]},
+{name:"Dosa",type:"veg",ingredients:["rice","urad dal"]},
+{name:"Idly",type:"veg",ingredients:["rice","urad dal"]},
+{name:"Chole Masala",type:"veg",ingredients:["chickpeas","onion","tomato"]},
+{name:"Fish Curry",type:"nonveg",ingredients:["fish","onion","tomato","garlic"]},
+{name:"Mutton Curry",type:"nonveg",ingredients:["mutton","onion","tomato","spices"]},
+{name:"Tomato Rice",type:"veg",ingredients:["rice","tomato","onion"]},
+{name:"Egg Curry",type:"nonveg",ingredients:["egg","onion","tomato"]}
 ];
 
-// ---------------- LOCATION DETECTION ----------------
-
-function detectLocation(){
-if(navigator.geolocation){
-navigator.geolocation.getCurrentPosition(position=>{
-document.getElementById("locationText").innerText=
-"📍 Location detected: India (Showing Indian recipes)";
-},()=>{
-document.getElementById("locationText").innerText=
-"📍 Location default: India";
-});
-}else{
-document.getElementById("locationText").innerText="📍 Showing Indian recipes";
-}
-}
-detectLocation();
-
-// ---------------- SEARCH ----------------
+// ---------------- AI MATCH ENGINE ----------------
 
 function searchRecipe(){
 
@@ -171,28 +81,52 @@ let diet=document.getElementById("diet").value;
 let results=document.getElementById("results");
 results.innerHTML="";
 
-if(!input){ alert("Enter ingredient"); return; }
-
-// Allow small spelling mistakes
-function matchIngredient(list){
-return list.some(i=>i.includes(input) || input.includes(i));
-}
+let ranked=[];
 
 recipes.forEach(recipe=>{
 
-if(matchIngredient(recipe.ingredients)){
+let score=0;
 
+// If no input → give base score
+if(!input){
+score=1;
+}else{
+recipe.ingredients.forEach(ing=>{
+if(ing.includes(input) || input.includes(ing)){
+score+=2;
+}
+});
+if(recipe.name.toLowerCase().includes(input)){
+score+=3;
+}
+}
+
+// Diet filter
 if(diet==="veg" && recipe.type==="nonveg") return;
 if(diet==="nonveg" && recipe.type==="veg") return;
 
-renderCard(recipe);
+if(score>0){
+ranked.push({...recipe,score:score});
 }
 
 });
 
+// If nothing matched → show all with low score
+if(ranked.length===0){
+ranked=recipes.map(r=>({...r,score:1}));
 }
 
-// ---------------- CARD ----------------
+// Sort by score
+ranked.sort((a,b)=>b.score-a.score);
+
+// Show top 12
+ranked.slice(0,12).forEach(recipe=>{
+renderCard(recipe);
+});
+
+}
+
+// ---------------- RENDER ----------------
 
 function renderCard(recipe){
 
@@ -206,22 +140,15 @@ let card=document.createElement("div");
 card.className="card";
 
 card.innerHTML=`
-<img src="${recipe.image}">
 <div class="card-content">
 <span class="badge ${recipe.type==="veg"?"veg":"nonveg"}">
 ${recipe.type==="veg"?"Veg":"Non-Veg"}
 </span>
 <h3>${recipe.name}</h3>
-
-<h4>Steps:</h4>
-<ol class="steps">
-${recipe.steps.map(s=>`<li>${s}</li>`).join("")}
-</ol>
-
+<div class="score">AI Match Score: ${recipe.score}</div>
 <a class="youtube" href="${youtubeLink}" target="_blank">
 ▶ Watch in Tamil
 </a>
-
 </div>
 `;
 
