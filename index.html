@@ -3,62 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🇮🇳 Ultimate AI Indian Recipe Platform</title>
+<title>Indian Recipes Hub</title>
 
 <style>
-body{font-family:Segoe UI;background:#f4f6f8;margin:0;padding:20px;}
-.container{max-width:1200px;margin:auto;}
-header{text-align:center;margin-bottom:20px;}
-input,select,button{
-padding:10px;border-radius:6px;border:1px solid #ccc;font-size:15px;margin:5px 0;
+body{
+font-family: Arial, sans-serif;
+margin:0;
+background:#f5f5f5;
 }
-button{background:#27ae60;color:white;border:none;cursor:pointer;}
-button:hover{background:#219150;}
-.results{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;margin-top:20px;}
-.card{background:white;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,0.08);overflow:hidden;cursor:pointer;}
-.card img{width:100%;height:160px;object-fit:cover;}
-.card-content{padding:15px;}
-.badge{font-size:12px;padding:4px 6px;border-radius:4px;font-weight:bold;}
-.veg{background:#e8f5e9;color:#2ecc71;}
-.nonveg{background:#ffebee;color:#e74c3c;}
-.score{font-size:12px;color:#555;margin:5px 0;}
-.chatbox{background:white;padding:15px;border-radius:10px;margin-top:30px;}
-.chat-output{height:120px;overflow-y:auto;background:#fafafa;padding:10px;margin-bottom:10px;border-radius:6px;}
+header{
+background:#8b0000;
+color:white;
+padding:20px;
+text-align:center;
+font-size:24px;
+font-weight:bold;
+}
+.container{
+max-width:1200px;
+margin:auto;
+padding:20px;
+}
+.search-bar{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+}
+.search-bar input{
+flex:1;
+padding:10px;
+font-size:16px;
+}
+.search-bar button{
+background:#8b0000;
+color:white;
+border:none;
+padding:10px 15px;
+cursor:pointer;
+}
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+gap:20px;
+}
+.card{
+background:white;
+border-radius:8px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+overflow:hidden;
+cursor:pointer;
+}
+.card img{
+width:100%;
+height:180px;
+object-fit:cover;
+}
+.card-content{
+padding:15px;
+}
+.badge{
+display:inline-block;
+padding:3px 6px;
+font-size:12px;
+border-radius:4px;
+margin-bottom:8px;
+}
+.veg{background:#e6f4ea;color:#2e7d32;}
+.nonveg{background:#fdecea;color:#c62828;}
+.chatbox{
+margin-top:40px;
+background:white;
+padding:15px;
+border-radius:8px;
+}
+.chat-output{
+height:150px;
+overflow-y:auto;
+background:#fafafa;
+padding:10px;
+margin-bottom:10px;
+}
 </style>
 </head>
 
 <body>
 
+<header>🍛 Indian Recipes Hub</header>
+
 <div class="container">
 
-<header>
-<h1>🇮🇳 Ultimate AI Indian Recipe Website</h1>
-<p>NLP • Chat Assistant • Nutrition • Grocery Planner • Regional Filter</p>
-</header>
+<div class="search-bar">
+<input type="text" id="searchInput" placeholder="Search by ingredient (potato, chicken, onion...)">
+<button onclick="searchRecipes()">Search</button>
+</div>
 
-<input type="text" id="userInput" placeholder="Type naturally: I have potato and onion">
-<select id="region">
-<option value="all">All India</option>
-<option value="tamil">Tamil Nadu</option>
-<option value="kerala">Kerala</option>
-<option value="north">North Indian</option>
-</select>
+<div id="results" class="grid"></div>
 
-<select id="diet">
-<option value="all">All</option>
-<option value="veg">Veg</option>
-<option value="nonveg">Non-Veg</option>
-</select>
-
-<button onclick="searchRecipes()">Find Recipes</button>
-
-<div id="results" class="results"></div>
-
-<!-- Chat Assistant -->
+<!-- AI Assistant -->
 <div class="chatbox">
 <h3>🤖 Cooking Assistant</h3>
 <div id="chatOutput" class="chat-output"></div>
-<input type="text" id="chatInput" placeholder="Ask me what to cook...">
+<input type="text" id="chatInput" placeholder="Ask: What can I cook with potato?">
 <button onclick="chatAssistant()">Ask</button>
 </div>
 
@@ -66,120 +111,88 @@ button:hover{background:#219150;}
 
 <script>
 
-// ---------------- AI RECIPE DATABASE ----------------
-
+// PROFESSIONAL IMAGE LINKS (WORKING)
 const recipes = [
 
 {
 name:"Chicken Biryani",
 type:"nonveg",
-region:"north",
-ingredients:["chicken","rice","onion","tomato","spices"],
-calories:650,
-image:"https://source.unsplash.com/400x300/?chicken-biryani",
-steps:["Marinate chicken.","Cook rice separately.","Layer chicken and rice.","Cook on dum 20 mins."]
+ingredients:["chicken","rice","onion","tomato"],
+image:"https://www.indianhealthyrecipes.com/wp-content/uploads/2021/12/chicken-biryani.jpg",
+steps:["Marinate chicken.","Cook rice.","Layer and cook on dum."]
 },
 
 {
 name:"Veg Biryani",
 type:"veg",
-region:"north",
-ingredients:["rice","carrot","beans","potato","onion"],
-calories:500,
-image:"https://source.unsplash.com/400x300/?veg-biryani",
-steps:["Saute vegetables.","Add rice.","Cook until fluffy."]
+ingredients:["rice","potato","carrot","beans"],
+image:"https://www.indianhealthyrecipes.com/wp-content/uploads/2021/12/veg-biryani-recipe.jpg",
+steps:["Saute vegetables.","Add rice and cook."]
 },
 
 {
-name:"Sambar",
+name:"Aloo Fry",
 type:"veg",
-region:"tamil",
-ingredients:["dal","onion","tomato","tamarind"],
-calories:180,
-image:"https://source.unsplash.com/400x300/?sambar",
-steps:["Cook dal.","Add vegetables.","Boil with tamarind."]
-},
-
-{
-name:"Appam & Stew",
-type:"veg",
-region:"kerala",
-ingredients:["rice","coconut","vegetables"],
-calories:350,
-image:"https://source.unsplash.com/400x300/?appam",
-steps:["Prepare batter.","Cook appam.","Prepare coconut stew."]
+ingredients:["potato","onion","chilli"],
+image:"https://www.indianhealthyrecipes.com/wp-content/uploads/2021/05/aloo-fry.jpg",
+steps:["Cut potatoes.","Add spices.","Fry till crispy."]
 },
 
 {
 name:"Butter Chicken",
 type:"nonveg",
-region:"north",
-ingredients:["chicken","butter","tomato","cream"],
-calories:700,
-image:"https://source.unsplash.com/400x300/?butter-chicken",
-steps:["Cook chicken.","Prepare creamy tomato gravy.","Mix and simmer."]
+ingredients:["chicken","butter","tomato"],
+image:"https://www.indianhealthyrecipes.com/wp-content/uploads/2022/02/butter-chicken.jpg",
+steps:["Cook chicken.","Prepare gravy.","Mix together."]
+},
+
+{
+name:"Sambar",
+type:"veg",
+ingredients:["dal","onion","tomato"],
+image:"https://www.indianhealthyrecipes.com/wp-content/uploads/2021/06/sambar.jpg",
+steps:["Cook dal.","Add vegetables.","Boil with tamarind."]
 }
 
 ];
 
-// ---------------- NLP KEYWORD EXTRACTOR ----------------
+// INITIAL LOAD
+displayRecipes(recipes);
 
-function extractKeywords(text){
-text=text.toLowerCase();
-let words=text.split(" ");
-return words.filter(w=>w.length>3);
-}
-
-// ---------------- SEARCH ----------------
-
+// SEARCH FUNCTION
 function searchRecipes(){
 
-let input=document.getElementById("userInput").value;
-let diet=document.getElementById("diet").value;
-let region=document.getElementById("region").value;
-let results=document.getElementById("results");
-results.innerHTML="";
+let input=document.getElementById("searchInput").value.toLowerCase();
 
-let keywords=extractKeywords(input);
-
-let ranked=[];
-
-recipes.forEach(recipe=>{
-
-let score=0;
-
-keywords.forEach(word=>{
-recipe.ingredients.forEach(ing=>{
-if(ing.includes(word)) score+=2;
-});
-if(recipe.name.toLowerCase().includes(word)) score+=3;
-});
-
-if(diet==="veg" && recipe.type==="nonveg") return;
-if(diet==="nonveg" && recipe.type==="veg") return;
-if(region!=="all" && recipe.region!==region) return;
-
-if(score>0 || keywords.length===0){
-ranked.push({...recipe,score:score});
+if(!input){
+displayRecipes(recipes);
+return;
 }
 
-});
+let filtered=recipes.filter(r=>
+r.ingredients.some(i=>i.includes(input))
+|| r.name.toLowerCase().includes(input)
+);
 
-ranked.sort((a,b)=>b.score-a.score);
-
-ranked.forEach(recipe=>renderCard(recipe));
-
+displayRecipes(filtered);
 }
 
-// ---------------- RENDER CARD ----------------
-
-function renderCard(recipe){
+// DISPLAY
+function displayRecipes(list){
 
 let container=document.getElementById("results");
+container.innerHTML="";
+
+if(list.length===0){
+container.innerHTML="<p>No recipes found.</p>";
+return;
+}
+
+list.forEach(recipe=>{
 
 let card=document.createElement("div");
 card.className="card";
-card.onclick=function(){ openRecipePage(recipe); };
+card.onclick=function(){openRecipe(recipe);};
 
 card.innerHTML=`
 <img src="${recipe.image}">
@@ -188,61 +201,53 @@ card.innerHTML=`
 ${recipe.type==="veg"?"Veg":"Non-Veg"}
 </span>
 <h3>${recipe.name}</h3>
-<div class="score">Calories: ${recipe.calories} kcal</div>
 </div>
 `;
 
 container.appendChild(card);
+
+});
 }
 
-// ---------------- OPEN NEW PAGE ----------------
+// OPEN NEW PAGE
+function openRecipe(recipe){
 
-function openRecipePage(recipe){
+let newWin=window.open("");
 
-let newWindow=window.open("");
-
-newWindow.document.write(`
+newWin.document.write(`
 <h1>${recipe.name}</h1>
 <img src="${recipe.image}" width="400">
-<h3>Calories: ${recipe.calories} kcal</h3>
-
 <h3>Ingredients:</h3>
 <ul>${recipe.ingredients.map(i=>"<li>"+i+"</li>").join("")}</ul>
-
-<h3>Step-by-Step:</h3>
+<h3>Steps:</h3>
 <ol>${recipe.steps.map(s=>"<li>"+s+"</li>").join("")}</ol>
-
 <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(recipe.name+" Tamil recipe")}" target="_blank">
-▶ Watch in Tamil
+Watch Tamil Video
 </a>
-
-<h3>🛒 Grocery List</h3>
-<button onclick="window.print()">Download Grocery List</button>
 `);
 
 }
 
-// ---------------- CHAT ASSISTANT ----------------
-
+// AI ASSISTANT
 function chatAssistant(){
 
 let input=document.getElementById("chatInput").value.toLowerCase();
 let output=document.getElementById("chatOutput");
 
-let response="";
+let suggestion=recipes.filter(r=>
+r.ingredients.some(i=>input.includes(i))
+);
 
-if(input.includes("healthy")){
-response="Try Sambar (low calories) or Veg Biryani.";
-}
-else if(input.includes("chicken")){
-response="You can cook Chicken Biryani or Butter Chicken.";
-}
-else{
-response="Tell me your ingredients and I will suggest something!";
+let reply="";
+
+if(suggestion.length>0){
+reply="You can cook: "+suggestion.map(s=>s.name).join(", ");
+}else{
+reply="Try using ingredients like potato, chicken, onion, rice.";
 }
 
 output.innerHTML+="<div><b>You:</b> "+input+"</div>";
-output.innerHTML+="<div><b>Assistant:</b> "+response+"</div>";
+output.innerHTML+="<div><b>Assistant:</b> "+reply+"</div>";
 
 document.getElementById("chatInput").value="";
 }
